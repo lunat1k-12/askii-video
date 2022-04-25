@@ -1,6 +1,7 @@
 package com.askii.video;
 
 import com.askii.video.service.AsckiiConvertorService;
+import com.askii.video.service.text.TextToGraphics;
 import org.bytedeco.javacv.FrameGrabber;
 
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ public class AskiiMainApplication {
 
     public static void main(String[] args) throws FrameGrabber.Exception {
         drawFrame().startVideoProcessing();
+//         new TextToGraphics().renderImage("Hello\nHere!");
     }
 
     public static AsckiiConvertorService drawFrame() {

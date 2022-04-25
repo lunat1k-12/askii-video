@@ -1,5 +1,6 @@
 package com.askii.video.service;
 
+import com.askii.video.service.text.TextToGraphics;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
@@ -21,9 +22,10 @@ public class AsckiiConvertorService {
 
     public static final String DENSITY = "Ñ@#W$9876543210?!abc;:+=-,._                      ";
 
-    public final StyledDocument doc;
-    public final SimpleAttributeSet attributeSet;
-    public final JFrame frame;
+    private final StyledDocument doc;
+    private final SimpleAttributeSet attributeSet;
+    private final JFrame frame;
+    private final TextToGraphics textToGraphics = new TextToGraphics();
 
     public AsckiiConvertorService(StyledDocument doc,
                                   SimpleAttributeSet attributeSet,
@@ -84,6 +86,7 @@ public class AsckiiConvertorService {
         try {
             doc.remove(0, doc.getLength());
             doc.insertString(0, sb.toString(), attributeSet);
+            textToGraphics.renderImage(sb.toString());
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
