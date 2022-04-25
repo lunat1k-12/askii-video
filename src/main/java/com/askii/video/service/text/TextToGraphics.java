@@ -5,11 +5,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.Stream;
 
 public class TextToGraphics {
 
-    public void renderImage(String text) {
+    public BufferedImage renderImage(String text) {
         /*
            Because font metrics is based on a graphics context, we need to create
            a small, temporary image so we can ascertain the width and height
@@ -27,7 +26,7 @@ public class TextToGraphics {
         int height = fm.getHeight() * lines.length;
         g2d.dispose();
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         g2d = img.createGraphics();
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
@@ -49,11 +48,14 @@ public class TextToGraphics {
             currentHeight+=oneLineHeight;
         }
         g2d.dispose();
+        return img;
+    }
+
+    private void saveImage(BufferedImage img) {
         try {
             ImageIO.write(img, "png", new File("Text.png"));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 }

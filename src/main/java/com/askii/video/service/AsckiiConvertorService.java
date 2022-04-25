@@ -1,7 +1,8 @@
 package com.askii.video.service;
 
+import com.askii.video.service.state.AppState;
 import com.askii.video.service.text.TextToGraphics;
-import org.bytedeco.javacv.FrameGrabber;
+import com.askii.video.service.video.VideoRecorderService;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.bytedeco.opencv.global.opencv_imgproc;
@@ -13,6 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static org.bytedeco.opencv.global.opencv_core.cvGet2D;
 import static org.bytedeco.opencv.global.opencv_core.cvGetMat;
@@ -26,6 +30,7 @@ public class AsckiiConvertorService {
     private final SimpleAttributeSet attributeSet;
     private final JFrame frame;
     private final TextToGraphics textToGraphics = new TextToGraphics();
+    private final VideoRecorderService videoService = new VideoRecorderService();
 
     public AsckiiConvertorService(StyledDocument doc,
                                   SimpleAttributeSet attributeSet,
@@ -35,33 +40,39 @@ public class AsckiiConvertorService {
         this.frame = frame;
     }
 
-    public void startVideoProcessing() throws FrameGrabber.Exception {
+    public void startVideoProcessing() throws IOException, InterruptedException {
         // 0-default camera, 1 - next...so on
         final OpenCVFrameGrabber grabber = new OpenCVFrameGrabber(0);
         grabber.setImageHeight(480);
         grabber.setImageWidth(640);
         grabber.setFrameNumber(5);
+        videoService.initRecorder("test_video.mp4", "mp4", 20);
 
+        int index = 0;
         try {
             grabber.start();
             OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-            while (frame.isVisible()) {
+            while (AppState.isIsRunning()) {
                 IplImage img = converter.convert(grabber.grab());
                 if (img != null) {
                     IplImage resizedImage = IplImage.create(170, 60,
                             img.depth(), img.nChannels());
                     opencv_imgproc.cvResize(img, resizedImage);
 
-                    convertAndPrintImage(resizedImage);
+                    convertAndPrintImage(resizedImage, index);
                 }
+                index++;
                 Thread.sleep(10);
             }
+            videoService.endRecord();
+            System.out.println("Exit application");
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void convertAndPrintImage(IplImage image) {
+    public void convertAndPrintImage(IplImage image, int globalIndex) {
         double r, g, b;
 
         CvMat mtx = CvMat.createHeader(image.height(), image.width(), CV_32FC1);
@@ -86,7 +97,8 @@ public class AsckiiConvertorService {
         try {
             doc.remove(0, doc.getLength());
             doc.insertString(0, sb.toString(), attributeSet);
-            textToGraphics.renderImage(sb.toString());
+            BufferedImage buffImg = textToGraphics.renderImage(sb.toString());
+            videoService.addImage(buffImg, globalIndex);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
