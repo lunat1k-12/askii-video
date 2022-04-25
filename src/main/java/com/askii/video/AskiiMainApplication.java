@@ -8,10 +8,17 @@ import org.bytedeco.opencv.opencv_core.CvMat;
 import org.bytedeco.opencv.opencv_core.CvScalar;
 import org.bytedeco.opencv.opencv_core.IplImage;
 
-import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 
 import static org.bytedeco.opencv.global.opencv_core.*;
 import static org.opencv.core.CvType.CV_32FC1;
