@@ -5,6 +5,15 @@ plugins {
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.askii.video.AskiiMainApplication'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 repositories {
     mavenCentral()
 }
