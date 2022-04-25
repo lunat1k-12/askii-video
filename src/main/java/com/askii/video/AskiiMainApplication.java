@@ -13,9 +13,7 @@ import javax.swing.text.*;
 
 import java.awt.*;
 
-import static org.bytedeco.opencv.global.opencv_core.cvGet2D;
-import static org.bytedeco.opencv.global.opencv_core.cvGetMat;
-import static org.bytedeco.opencv.helper.opencv_imgcodecs.cvSaveImage;
+import static org.bytedeco.opencv.global.opencv_core.*;
 import static org.opencv.core.CvType.CV_32FC1;
 
 public class AskiiMainApplication {
@@ -86,14 +84,10 @@ public class AskiiMainApplication {
     }
 
     private static void convertAndSaveImage(IplImage image) {
-
         double r, g, b;
 
-//        cvSaveImage("capture.jpg", image);
         CvMat mtx = CvMat.createHeader(image.height(), image.width(), CV_32FC1);
         cvGetMat(image, mtx);
-
-//        System.out.println(mtx.rows() + "x" + mtx.cols());
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mtx.rows(); i++)
@@ -101,9 +95,9 @@ public class AskiiMainApplication {
             for (int j = 0; j < mtx.cols(); j++)
             {
                 CvScalar rgb = cvGet2D(mtx, i, j);
-                r = rgb.val(0);
-                g = rgb.val(2);
-                b = rgb.val(1);
+                r = rgb.red();
+                g = rgb.green();
+                b = rgb.blue();
 
                 double gray = (r + g + b) / 3;
                 int index = Double.valueOf(map(gray, 0, 255, 0, DENSITY.length() - 1)).intValue();
